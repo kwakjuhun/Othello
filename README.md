@@ -1,2 +1,2 @@
 # Othello
-Java                     2019_01
+Java                     2019_01 v0.0
