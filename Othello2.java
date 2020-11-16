@@ -4,17 +4,22 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.awt.Font;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class Othello2 extends JFrame {
 	int[][][][] data = new int[8][8][21][2];
 	Stone[][] stones = new Stone[8][8];
+	int[] score = {2,2};
 	ArrayList<Stone> ex = new ArrayList<>(); 
 	int play_turn = 2;
+	JLabel turn_label = new JLabel();
+	JLabel score_label = new JLabel();
 	JPanel game_panel = new JPanel() {
 		public void paintComponent(Graphics g) {
 			int count = 0;
@@ -29,6 +34,8 @@ public class Othello2 extends JFrame {
 			}
 		}
 	};
+	JPanel situation_panel = new JPanel();
+
 	public class Stone{
 		int s;
 		int x, y;
@@ -65,7 +72,6 @@ public class Othello2 extends JFrame {
 		}
 		void change(int state){
 			s = state;
-			System.out.println("change : "+x+'-'+y+' '+s);
 			game_panel.remove(label);
 			drawLabel();
 		}
@@ -76,6 +82,7 @@ public class Othello2 extends JFrame {
 			lab.addMouseListener(new MouseAdapter(){
 				@Override
 				public void mouseClicked(MouseEvent e){
+					System.out.println(x+":"+y);
 					board[y][x] = play_turn;
 					stones[y][x] = new Stone(play_turn, x, y);
 					for(int i = 0; i < data[y][x].length; i++){
@@ -86,8 +93,17 @@ public class Othello2 extends JFrame {
 						else break;
 					}
 
-					if(play_turn == 1) play_turn = 2;
-					else play_turn = 1;
+					if(play_turn == 1){
+						play_turn = 2;
+						turn_label.setText("BLACK");
+					}
+					else{
+						play_turn = 1;
+						turn_label.setText("WHITE");
+					}
+					int[] score = map();
+					score_label.setText("<html>BLACK : "+score[0]+"<br>"+"WHITE : "+score[1]+"</html>");
+
 
 					for(int i = 0; i < ex.size(); i++){
 						ex.get(i).delete();
@@ -100,13 +116,18 @@ public class Othello2 extends JFrame {
 			});
 		}
 	}
-	public void map(){
+	public int[] map(){
+		int b = 0;
+		int w = 0;
 		for (int i = 0; i < 8; i++){
 			for (int j = 0; j < 8; j++){
-				System.out.print(" "+board[i][j]);
+				if(board[i][j] == 2)
+					b++;
+				else if(board[i][j] == 1)
+					w++;
 			}
-			System.out.println(' ');
 		}
+		return new int[]{b,w};
 
 	}
 	public Othello2() {
@@ -119,8 +140,8 @@ public class Othello2 extends JFrame {
 	};
 
 	int board[][] = new int[8][8];
+
 	public void start(){
-		setTitle("Black");
 		for (int i = 0; i < 8; i++)
 			for (int j = 0; j < 8; j++)
 				board[i][j] = 0;
@@ -133,15 +154,27 @@ public class Othello2 extends JFrame {
 		board[4][3] = 1;
 		stones[4][3] = new Stone(1, 3, 4);
 
-		game_panel.setBounds(0, 0, 1000, 1000);
+		game_panel.setBounds(0, 0, 800, 1000);
 		game_panel.setLayout(null);
+		turn_label.setText("BLACK");
+		turn_label.setFont(new Font("Serif", Font.BOLD, 50));
+		turn_label.setHorizontalAlignment(SwingConstants.CENTER);
+		turn_label.setBounds(0,0,300,300);
+		score_label.setText("<html>BLACK : "+2+"<br>"+"WHITE : "+2+"</html>");
+		score_label.setFont(new Font("Serif", Font.BOLD, 30));
+		score_label.setBounds(0,300,300,300);
+		score_label.setHorizontalAlignment(SwingConstants.CENTER);
+		situation_panel.add(turn_label);
+		situation_panel.add(score_label);
+		situation_panel.setBackground(Color.white);
+		situation_panel.setBounds(800,0,300,1000);
+		situation_panel.setLayout(null);
 		add(game_panel);
-
+		add(situation_panel);
 		checking(2);
 	}
 	public void checking(int turn){	
 		data = new int[8][8][21][2];
-		System.out.print(data);
 		for (int y = 0; y < 8; y++) {
 			for (int x = 0; x < 8; x++) {
 				int cnt = 0;
