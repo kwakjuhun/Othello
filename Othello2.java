@@ -13,7 +13,8 @@ import javax.swing.JPanel;
 public class Othello2 extends JFrame {
 	int[][][][] data = new int[8][8][21][2];
 	Stone[][] stones = new Stone[8][8];
-	int play_turn = 1;
+	ArrayList<Stone> ex = new ArrayList<>(); 
+	int play_turn = 2;
 	JPanel game_panel = new JPanel() {
 		public void paintComponent(Graphics g) {
 			int count = 0;
@@ -64,6 +65,7 @@ public class Othello2 extends JFrame {
 		}
 		void change(int state){
 			s = state;
+			System.out.println("change : "+x+'-'+y+' '+s);
 			game_panel.remove(label);
 			drawLabel();
 		}
@@ -74,17 +76,39 @@ public class Othello2 extends JFrame {
 			lab.addMouseListener(new MouseAdapter(){
 				@Override
 				public void mouseClicked(MouseEvent e){
-					// 다른 3번애들은 다 지우기;
-					// 데이터 가져와서 뒤집기
-					// 이것도 뒤집어야함
-					// 예측표 다시 띄우기
+					board[y][x] = play_turn;
+					stones[y][x] = new Stone(play_turn, x, y);
+					for(int i = 0; i < data[y][x].length; i++){
+						if(data[y][x][i][1] > 0 && data[y][x][i][0] > 0){
+							stones[data[y][x][i][1]][data[y][x][i][0]].change(play_turn);
+							board[data[y][x][i][1]][data[y][x][i][0]] = play_turn;
+						}
+						else break;
+					}
 
-					// change();
+					if(play_turn == 1) play_turn = 2;
+					else play_turn = 1;
+
+					for(int i = 0; i < ex.size(); i++){
+						ex.get(i).delete();
+					}
+					ex.clear();
+					checking(play_turn);
+					repaint();
+					map();
 				}
 			});
 		}
 	}
+	public void map(){
+		for (int i = 0; i < 8; i++){
+			for (int j = 0; j < 8; j++){
+				System.out.print(" "+board[i][j]);
+			}
+			System.out.println(' ');
+		}
 
+	}
 	public Othello2() {
 		setSize(1130, 850);
 		setTitle("Othello");
@@ -117,9 +141,10 @@ public class Othello2 extends JFrame {
 	}
 	public void checking(int turn){	
 		data = new int[8][8][21][2];
-		int cnt = 0;
+		System.out.print(data);
 		for (int y = 0; y < 8; y++) {
 			for (int x = 0; x < 8; x++) {
+				int cnt = 0;
 				if(board[y][x] == 0){
 					// 위
 					int tmp = 0;
@@ -132,6 +157,7 @@ public class Othello2 extends JFrame {
 								data[y][x][cnt][0] = x;
 								data[y][x][cnt++][1] = y-c-1;
 							}
+							break;
 						}
 						tmp++;
 					}
@@ -146,6 +172,7 @@ public class Othello2 extends JFrame {
 								data[y][x][cnt][0] = x;
 								data[y][x][cnt++][1] = y+c+1;
 							}
+							break;
 						}
 						tmp++;
 					}
@@ -160,6 +187,7 @@ public class Othello2 extends JFrame {
 								data[y][x][cnt][0] = x+c+1;
 								data[y][x][cnt++][1] = y;
 							}
+							break;
 						}
 						tmp++;
 					}
@@ -174,6 +202,7 @@ public class Othello2 extends JFrame {
 								data[y][x][cnt][0] = x-c-1;
 								data[y][x][cnt++][1] = y;
 							}
+							break;
 						}
 						tmp++;
 					}
@@ -189,6 +218,7 @@ public class Othello2 extends JFrame {
 								data[y][x][cnt][0] = x-c-1;
 								data[y][x][cnt++][1] = y-c-1;
 							}
+							break;
 						}
 						tmp++;
 					}
@@ -203,6 +233,7 @@ public class Othello2 extends JFrame {
 								data[y][x][cnt][0] = x+c+1;
 								data[y][x][cnt++][1] = y-c-1;
 							}
+							break;
 						}
 						tmp++;
 					}
@@ -217,6 +248,7 @@ public class Othello2 extends JFrame {
 								data[y][x][cnt][0] = x-c-1;
 								data[y][x][cnt++][1] = y+c+1;
 							}
+							break;
 						}
 						tmp++;
 					}
@@ -231,12 +263,15 @@ public class Othello2 extends JFrame {
 								data[y][x][cnt][0] = x+c+1;
 								data[y][x][cnt++][1] = y+c+1;
 							}
+							break;
 						}
 						tmp++;
 					}
+					data[y][x][cnt][0] = -1;
+					data[y][x][cnt][1] = -1;
 				}
 				if(cnt > 0){
-					stones[y][x] = new Stone(3, x, y);
+					ex.add(new Stone(3, x, y));
 				}
 			}			
 		}
