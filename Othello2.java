@@ -92,27 +92,37 @@ public class Othello2 extends JFrame {
 						else break;
 					}
 
-					if(play_turn == 1){
-						play_turn = 2;
-						turn_label.setText("BLACK");
-					}
-					else{
-						play_turn = 1;
-						turn_label.setText("WHITE");
-					}
+
 					int[] score = map();
 					score_label.setText("<html>BLACK : "+score[0]+"<br>"+"WHITE : "+score[1]+"</html>");
 
-
+					turn_change();
 					for(int i = 0; i < ex.size(); i++){
 						ex.get(i).delete();
 					}
 					ex.clear();
 					checking(play_turn);
+					if(ex.size() == 0){
+						turn_change();
+						checking(play_turn);
+						if(ex.size() == 0){
+							turn_label.setText("Game Set");
+						}
+					}
 					repaint();
 					map();
 				}
 			});
+		}
+	}
+	public void turn_change(){
+		if(play_turn == 1){
+			play_turn = 2;
+			turn_label.setText("BLACK");
+		}
+		else{
+			play_turn = 1;
+			turn_label.setText("WHITE");
 		}
 	}
 	public int[] map(){
