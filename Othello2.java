@@ -82,11 +82,10 @@ public class Othello2 extends JFrame {
 			lab.addMouseListener(new MouseAdapter(){
 				@Override
 				public void mouseClicked(MouseEvent e){
-					System.out.println(x+":"+y);
 					board[y][x] = play_turn;
 					stones[y][x] = new Stone(play_turn, x, y);
 					for(int i = 0; i < data[y][x].length; i++){
-						if(data[y][x][i][1] > 0 && data[y][x][i][0] > 0){
+						if(data[y][x][i][1] > -1 && data[y][x][i][0] > -1){
 							stones[data[y][x][i][1]][data[y][x][i][0]].change(play_turn);
 							board[data[y][x][i][1]][data[y][x][i][0]] = play_turn;
 						}
@@ -181,7 +180,6 @@ public class Othello2 extends JFrame {
 				if(board[y][x] == 0){
 					// 위
 					int tmp = 0;
-					cnt = 0;
 					for(int j = y - 1; j >= 0 ; j--){
 						if(board[j][x] == 0) break;
 						if(board[j][x] == turn){
